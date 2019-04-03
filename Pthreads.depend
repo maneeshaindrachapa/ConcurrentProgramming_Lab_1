@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1554291906 source:c:\users\maneesha\desktop\concurrent\pthreads\main.c
+	<stdio.h>
+	<stdlib.h>
+	<pthread.h>
+
+1554292523 source:c:\users\maneesha\desktop\concurrent\pthreads\serial_linked_list.c
+	<stdio.h>
+	<stdlib.h>
+	<sys/time.h>
+
+1554300709 source:c:\users\maneesha\desktop\concurrent\pthreads\rw_linked_list.c
+	<stdio.h>
+	<stdlib.h>
+	<sys/time.h>
+	<pthread.h>
+
