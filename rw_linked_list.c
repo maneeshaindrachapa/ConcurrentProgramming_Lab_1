@@ -3,7 +3,7 @@
  * Linked List with read write lock
  *
  * Compile : gcc -g -Wall -o rw_linked_list rw_linked_list.c -pthread -lm
- * Run : ./rw_linked_list <n> <m> <mMember> <mInsert> <mDelete>
+ * Run : ./rw_linked_list <n> <m> <tc> <mMember> <mInsert> <mDelete>
  *
  * */
 #include<stdio.h>
