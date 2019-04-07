@@ -25,7 +25,7 @@ int m = 0;
 int thread_count = 0;
 
 //no of times
-int times_run=0;
+int times_run = 0;
 
 // Fractions of each operation
 float m_insert_fraction = 0.0, m_delete_fraction = 0.0, m_member_fraction = 0.0;
@@ -301,8 +301,8 @@ int main(int argc, char *argv[])
     float mean = 0.0;
     float std = 0.0;
 
-    // get initial execution rounds as 10
-    int cur_exe_count = 10;
+    // get initial execution rounds as 20
+    int cur_exe_count = 20;
     int pre_exe_count = cur_exe_count - 2;
     int exe_count = 0;
 
@@ -323,14 +323,14 @@ int main(int argc, char *argv[])
         std = 0.0;
         float timeCalc[(int)cur_exe_count]; //keep track of the time for each execution
         exe_count++;
+
         while (count < cur_exe_count)
         {
-
-            m_member = 0;
-            m_insert = 0;
-            m_delete = 0;
-
+            m_insert = (int)(m_insert_fraction * m);
+            m_delete = (int)(m_delete_fraction * m);
+            m_member = (int)(m_member_fraction * m);
             head = NULL;
+
             // Linked List Generation with Random values
             int i = 0;
             while (i < n)
