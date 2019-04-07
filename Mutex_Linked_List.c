@@ -28,6 +28,9 @@ int m = 0;
 // Number of executing threads
 int thread_count = 0;
 
+//no of times
+int times_run=0;
+
 // Fractions for operation
 float m_insert_fraction = 0.0, m_delete_fraction = 0.0, m_member_fraction = 0.0;
 
@@ -112,12 +115,18 @@ int Delete(int value, struct list_node_s **head_pp) {
         return 0;
 }
 
+//calculate optimal execution count within an accuracy of ±5% and 95% confidence level
+double calcOptExp(double mean, double std){
+	times_run = (100*1.960*std/(5*mean))*(100*1.960*std/(5*mean));
+	return times_run;
+}
+
 //Getting the inputs
 void getInput(int argc, char *argv[]) {
 
     // Number of arguments validation
     if (argc != 7) {
-        printf("Please give the command: ./mutex_linkedList <n> <m> <thread_count> <mMember> <mInsert> <mDelete>\n");
+        printf("Please give the command: ./mutex_linkedList <n> <m> <thread_count> <noftimes> <mMember> <mInsert> <mDelete>\n");
         exit(0);
     }
 
@@ -125,6 +134,7 @@ void getInput(int argc, char *argv[]) {
     n = (int) strtol(argv[1], (char **) NULL, 10);
     m = (int) strtol(argv[2], (char **) NULL, 10);
     thread_count = (int) strtol(argv[3], (char **) NULL, 10);
+    //times_run=(int) strtol(argv[4], (char **) NULL, 10);
 
     // Setting the input values of operation fraction values
     m_member_fraction = (float) atof(argv[4]);
@@ -220,7 +230,6 @@ double CalcTime(struct timeval time_start, struct timeval time_end) {
 }
 
 int main(int argc, char *argv[]) {
-
     // Obtaining the inputs
     getInput(argc, argv);
 
@@ -229,8 +238,12 @@ int main(int argc, char *argv[]) {
 
     int count = 0;                  //to count how many time program happened
     float mean = 0.0;
-    float timeCalc[10];            //keep track of the time for each execution
     float std = 0.0;
+
+    // get initial execution rounds as 10 
+    int cur_exe_count =10;
+    int pre_exe_count = cur_exe_count-2;
+    int exe_count = 0;
 
 
     // time variables
@@ -241,7 +254,14 @@ int main(int argc, char *argv[]) {
     m_delete = m_delete_fraction * m;
     m_member = m_member_fraction * m;
 
-    while (count < 10) {
+    while(abs(cur_exe_count-pre_exe_count)>1){
+        count = 0;
+        mean = 0.0;
+        std= 0.0;
+        float timeCalc[(int)cur_exe_count];            //keep track of the time for each execution
+        exe_count++;
+    
+    while (count < cur_exe_count) {
         count_member = 0;
         count_insert = 0;
         count_delete = 0;
@@ -283,18 +303,35 @@ int main(int argc, char *argv[]) {
         //free(thread_handlers);
 
         double timeDiff = CalcTime(time_start, time_end);
-        printf("Linked List with a single mutex Time Spent : %.6f secs\n", CalcTime(time_start, time_end));
         timeCalc[count] = timeDiff;
         count++;
         mean = mean + timeDiff;
     }
-    mean = mean/10;
-    for(int i=0; i<10; i++){
+    mean = mean/cur_exe_count;
+    for(int i=0; i<cur_exe_count; i++){
         std = std + (timeCalc[i]-mean)*(timeCalc[i]-mean);
     }
-    std = sqrt(std/10);
-    printf("Std is %f.5 \n", std);
-    printf("Mean is %f.5", mean);
+        std = sqrt(std/cur_exe_count);
+        printf("\n********************** Code Run Count**********************\n");
+        printf("Std is %f \n", std);
+        printf("Mean is %f \n", mean);
+        printf("Experiment batch size %d \n", cur_exe_count);
+
+        // Update the execution count variable till optimal value
+        pre_exe_count = cur_exe_count;
+        cur_exe_count = calcOptExp(mean,std);
+
+        // Skip the 0 value
+        if(cur_exe_count == 0){
+            cur_exe_count = 10;
+            pre_exe_count = cur_exe_count-2;
+        }
+    }
+    printf("\n>>>>>>>>>>>>>>>>>>>>>> Final Results <<<<<<<<<<<<<<<<<<<<<<<\n");
+    printf("Std : %.5f \n", std);
+    printf("Mean : %.5f\n", mean);
+    printf("Optimal exeperiments : %d \n", pre_exe_count);
+        
     return 0;
 }
 
